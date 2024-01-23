@@ -4,10 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.Properties;
 
 public class Main {
@@ -19,7 +16,15 @@ public class Main {
         String password = properties.getProperty("db.postgresql.password");
 
         try (Connection conn = DriverManager.getConnection(url, username, password)) {
-            PreparedStatement ps = conn.prepareStatement("SELECT * FROM pg_database");
+
+            DatabaseMetaData databaseMetaData = conn.getMetaData();
+            ResultSet rs =  databaseMetaData.getTables(null, null, null, new String[]{"SYSTEM TABLE"});
+
+            while (rs.next()) {
+                System.out.printf("%s\n", rs.getString("TABLE_NAME"));
+                System.out.println(rs.getString("TABLE_NAME"));
+            }
+
         } catch (SQLException e) {
             System.out.println(e.getMessage());
             e.printStackTrace();
